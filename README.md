@@ -10,6 +10,7 @@ A G-Code viewer for 3D printer slicer generated outputs.
 ## Origins
 
 This software was derived from [yagv][1] (also see [here][2]), created by [jonathanw][3].
+then modified into yagv-ng[0] by  FMMT666 
 
 
 ---
@@ -27,6 +28,12 @@ The licensor cannot revoke these freedoms as long as you follow the license term
 
 ---
 ## News
+### CHANGES 2021-06-18
+
+    - ran '2to3' on the .py files to make them into python3 compatible code then corrected errors produced when attempting to run.
+    - made Gcode  G0x instead of only Gx acceptable,  discarded all  Gcode starting with M, discarded Gcode starting with '('and '%'
+    - mapped G2 and G3 onto G1 , accept I J K values but not using them ... didn check the actual effect on rounded corners.
+    - code now imports RegEx.
 
 ### CHANGES 2016/01/12
 
@@ -37,34 +44,17 @@ The licensor cannot revoke these freedoms as long as you follow the license term
 
 
 ---
-## Plans
-
-3D print analyses:
-  
-  - amount of extrusion
-  - speeds
-  - distances
-  - ...
-
-Program:
-
-  - proper loading of all G-Code files
-  - selection of single elements
-  - save/load state for comparing files
-  - ...
-
 
 ---
 ## Requirements
 
-  - Python 2 ([www.python.org][4])
-  - pyglet ([www.pyglet.org][5])
+  - Python 3 
+  - pyglet  and re
    
-Python 3 is not _yet_ supported [...].
 
-Yagv-ng was developed and tested under
+Yagv-ng was tested under
   
-  - Linux, Ubuntu 14.04 LTS
+  - Linux, Ubuntu 20.04  and MINT 20  (Ulyana)
   - Mac OS X Yosemite and El Capitan
   - Windows 7
   
@@ -87,46 +77,11 @@ yagv-ng should be executed from a command line, inside a terminal:
     
 ### Linux
 
-Python, as well as pyglet should [tm] be available via your distribution's
+Python, as well as pyglet should be available via your distribution's
 package management system.
   
-t.b.c...
 
-
-### Mac OS X
-
-Yagv-ng does run with Python as distributed from Apple.  
-To install pyglet, execute:
-  
-    sudo pip install pyglet
-    
-in a terminal window.  
-If "pip" is not installed, it can be obtained by typing
-  
-    sudo easy_install pip
-    
-
-### Windows
-
-To be written...
-
- 
----
-## Usage:
-
-    yagv <file name>
-
-If no file name is given, the file "einhornkatzchen_min.gcode", from the "data"
-directory is automatically loaded.
-  
-
-
----
-
-Have fun
-FMMT666(ASkr)
-
-
+[0]: https://github.com/FMMT666/yagv-ng
 [1]: https://github.com/jonathanwin/yagv
 [2]: http://www.thingiverse.com/thing:38118
 [3]: http://www.thingiverse.com/jonathanw/about
