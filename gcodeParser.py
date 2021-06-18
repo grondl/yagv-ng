@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import math
+import re
 
 class GcodeParser:
 	
@@ -39,8 +40,12 @@ class GcodeParser:
 		comm = command.split(None, 1)
 		code = comm[0] if (len(comm)>0) else None
 		args = comm[1] if (len(comm)>1) else None
-		
+		if code and ( code[0] == "(" or code[0] == "%" or code[0] == "M" ):
+			code = None
 		if code:
+			if len(code) > 2:
+				if ( code[1] == "0")  :
+					code = code[0] +  code[2:]
 			if hasattr(self, "parse_"+code):
 				getattr(self, "parse_"+code)(args)
 			else:
@@ -52,7 +57,8 @@ class GcodeParser:
 			bits = args.split()
 			for bit in bits:
 				letter = bit[0]
-				coord = float(bit[1:])
+				# keeping only numeric and +-.  
+				coord = float(re.sub("[^0-9.\-+]", "", bit[1:]))
 				dic[letter] = coord
 		return dic
 
@@ -64,6 +70,16 @@ class GcodeParser:
 	def parse_G1(self, args, type="G1"):
 		# G1: Controlled move
 		self.model.do_G1(self.parseArgs(args), type)
+		
+	def parse_G2(self, args):
+		# G0: Rapid move
+		# do something even if wrong ... cutting corners !  same as a controlled move for us (& reprap FW)
+		self.parse_G1(args, "G2")
+		
+	def parse_G3(self, args):
+		# G0: Rapid move
+		# do something even if wrong ... cutting corners !  same as a controlled move for us (& reprap FW)
+		self.parse_G1(args, "G2")
 		
 	def parse_G20(self, args):
 		# G20: Set Units to Inches
@@ -91,10 +107,10 @@ class GcodeParser:
 		self.model.do_G92(self.parseArgs(args))
 		
 	def warn(self, msg):
-		print "[WARN] Line %d: %s (Text:'%s')" % (self.lineNb, msg, self.line)
+		print("[WARN] Line %d: %s (Text:'%s')" % (self.lineNb, msg, self.line))
 		
 	def error(self, msg):
-		print "[ERROR] Line %d: %s (Text:'%s')" % (self.lineNb, msg, self.line)
+		print("[ERROR] Line %d: %s (Text:'%s')" % (self.lineNb, msg, self.line))
 		raise Exception("[ERROR] Line %d: %s (Text:'%s')" % (self.lineNb, msg, self.line))
 
 class BBox(object):
@@ -141,7 +157,10 @@ class GcodeModel:
 			"Y":0.0,
 			"Z":0.0,
 			"F":0.0,
-			"E":0.0}
+			"E":0.0,
+			"I":0.0,
+			"J":0.0,
+			"K":0.0}
 		# offsets for relative coordinates and position reset (G92)
 		self.offset = {
 			"X":0.0,
@@ -162,8 +181,8 @@ class GcodeModel:
 		# clone previous coords
 		coords = dict(self.relative)
 		# update changed coords
-		for axis in args.keys():
-			if coords.has_key(axis):
+		for axis in list(args.keys()):
+			if axis in coords:
 				if self.isRelative:
 					coords[axis] += args[axis]
 				else:
@@ -196,11 +215,11 @@ class GcodeModel:
 		# this changes the current coords, without moving, so do not generate a segment
 		
 		# no axes mentioned == all axes to 0
-		if not len(args.keys()):
+		if not len(list(args.keys())):
 			args = {"X":0.0, "Y":0.0, "Z":0.0, "E":0.0}
 		# update specified axes
-		for axis in args.keys():
-			if self.offset.has_key(axis):
+		for axis in list(args.keys()):
+			if axis in self.offset:
 				# transfer value from relative to offset
 				self.offset[axis] += self.relative[axis] - args[axis]
 				self.relative[axis] = args[axis]
@@ -397,4 +416,4 @@ if __name__ == '__main__':
 	parser = GcodeParser()
 	model = parser.parseFile(path)
 
-	print model
+	print(model)
