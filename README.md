@@ -10,7 +10,8 @@ A G-Code viewer for 3D printer slicer generated outputs.
 ## Origins
 
 This software was derived from [yagv][1] (also see [here][2]), created by [jonathanw][3].
-then modified into [yagv-ng][0] by  [FMMT666[0] 
+
+then modified into [yagv-ng][0] by  [FMMT666][0] 
 
 
 ---
@@ -31,9 +32,9 @@ The licensor cannot revoke these freedoms as long as you follow the license term
 ### CHANGES 2021-06-18
 
     - ran '2to3' on the .py files to make them into python3 compatible code then corrected errors produced when attempting to run.
-    - made Gcode  G0x instead of only Gx acceptable,  discarded all  Gcode starting with M, discarded Gcode starting with '('and '%'
-    - mapped G2 and G3 onto G1 , accept I J K values but not using them ... didn check the actual effect on rounded corners.
-    - code now needs to import RegEx.
+    - made Gcode  G0x instead of only Gx acceptable,  discarded all  Gcode starting with M, discarded Gcode starting with '('and '%' which are comments
+    - mapped G2 and G3 onto G1 , accepting I J K values but not using them ... did not check the actual effect on rounded corners.
+    - code now needs to import RegEx library (re).
 
 ### CHANGES 2016/01/12
 
